@@ -1,0 +1,135 @@
+class Program
+    {
+        static int[,] A, B, R;
+        static int n, k1, k2;
+        static Random rnd = new Random();
+
+        static void Main(string[] args)
+        {
+            DimMatr:
+            Console.Write("Introduceti dimensiunea matricelor: ");
+            try
+            {
+                n = int.Parse(Console.ReadLine());
+            }
+            catch
+            {
+                Console.WriteLine("Introduceti un numar valid!");
+                goto DimMatr;
+            }
+
+            ConstK1:
+            Console.Write("Introduceti constanta k1 pentru determinarea lungimii benzii primei martice: ");
+            try
+            {
+                k1 = int.Parse(Console.ReadLine());
+            }
+            catch
+            {
+                Console.WriteLine("Introduceti un numar valid!");
+                goto ConstK1;
+            }
+
+            if (k1 == 0 || k1 >= n - 1)
+            {
+                Console.WriteLine("Constanta k trebuie sa ia un numar nenul strict mai mic decat n-1");
+                goto ConstK1;
+            }
+
+            ConstK2:
+            Console.Write("Introduceti constanta k2 pentru determinarea lungimii benzii celei de-a doua martice: ");
+            try
+            {
+                k2 = int.Parse(Console.ReadLine());
+            }
+            catch
+            {
+                Console.WriteLine("Introduceti un numar valid!");
+                goto ConstK2;
+            }
+
+            if (k2 == 0 || k2 >= n - 1)
+            {
+                Console.WriteLine("Constanta k trebuie sa ia un numar nenul strict mai mic decat n-1");
+                goto ConstK2;
+            }
+            
+            A = new int[n, n];
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                {
+                    if (Math.Abs(i - j) <= k1)
+                    {
+                        A[i, j] = rnd.Next(1, 10);
+                    }
+                }
+            Afisare(A);
+
+            B = new int[n, n];
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                {
+                    if (Math.Abs(i - j) <= k2)
+                    {
+                        B[i, j] = rnd.Next(1, 10);
+                    }
+                }
+            Afisare(B);
+
+            ProdusMatrice();
+            Console.WriteLine("Produsul matricelor:");
+            Afisare(R);
+
+            IsBanda(R);
+            Console.ReadKey();
+        }
+
+        static void ProdusMatrice()
+        {
+            R = new int[n, n];
+            for (int k = 0; k < n; k++)
+                for (int i = 0; i < n; i++)
+                    for (int j = 0; j < n; j++)
+                    {
+                        R[k, i] += A[k, j] * B[j, i];
+                    }
+        }
+
+        static void IsBanda(int[,] matrix)
+        {
+            int m = matrix.GetLength(0);
+            int k = m - 2;
+
+            bool isBanda = true;
+            for (int i = 0; i < m; i++)
+                for (int j = 0; j < m; j++)
+                {
+                    if (Math.Abs(i - j) > k && matrix[i, j] != 0)
+                    {
+                        isBanda = false;
+                    }
+                }
+
+            if (isBanda)
+            {
+                Console.WriteLine("Produsul matricei este banda");
+            }
+            else
+            {
+                Console.WriteLine("Produsul matricei nu este banda");
+            }
+        }
+
+        static void Afisare(int[,] matrix)
+        {
+            Console.WriteLine();
+            int m = matrix.GetLength(0);
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < m; j++)
+                    Console.Write(matrix[i, j] + "\t");
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+        }
+    }

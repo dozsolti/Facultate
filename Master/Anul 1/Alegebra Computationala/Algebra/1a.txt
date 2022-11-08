@@ -1,0 +1,162 @@
+class Program
+    {
+        static float[,] A, invA;
+        static int n, k;
+        static Random rnd = new Random();
+
+        static void Main(string[] args)
+        {
+            DimMatr:
+            Console.Write("Introduceti dimensiunea matricei: ");
+            try
+            {
+                n = int.Parse(Console.ReadLine());
+            }
+            catch
+            {
+                Console.WriteLine("Introduceti un numar valid!");
+                goto DimMatr;
+            }
+
+            ConstK:
+            Console.Write("Introduceti constanta k pentru determinarea lungimii benzii: ");
+            try
+            {
+                k = int.Parse(Console.ReadLine());
+            }
+            catch
+            {
+                Console.WriteLine("Introduceti un numar valid!");
+                goto ConstK;
+            }
+
+            if(k==0 || k>=n-1)
+            {
+                Console.WriteLine("Constanta k trebuie sa ia un numar nenul strict mai mic decat n-1");
+                goto ConstK;
+            }
+
+            Generare:
+            A = new float[n, n];
+            for(int i=0; i< n; i++)
+                for(int j=0; j< n; j++)
+                {
+                    if(Math.Abs(i-j)<=k)
+                    {
+                        A[i, j] = rnd.Next(1, 10);
+                    }
+                }
+            Afisare(A);
+
+            invA = new float[n, n];
+            bool hasInv = Inversa(A);
+            if(!hasInv)
+            {
+                goto Generare;
+            }
+
+            Console.WriteLine("Inversa matricei:");
+            Afisare(invA);
+
+            IsBanda(invA);
+            Console.ReadKey();
+        }
+
+        static bool Inversa(float[,] A)
+        {
+            float det = CalculDeterminant(A);
+
+            if (det != 0)
+            {
+                for (int i = 0; i < n; i++)
+                    for (int j = 0; j < n; j++)
+                    {
+                        float[,] C = Scurtare(i, j, A);
+                        float tempDet = CalculDeterminant(C);
+
+                        invA[i, j] = (int)Math.Pow(-1, i + j) * tempDet;
+                    }
+                for (int i = 0; i < n; i++)
+                    for (int j = 0; j < n; j++)
+                        invA[i, j] *= 1f / det;
+
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("Determinantul matricei este 0. Vom genera o matrice noua.");
+                return false;
+            }
+        }
+
+        static float CalculDeterminant(float[,] matrix)
+        {
+            float det = 0;
+            if (matrix.GetLength(0) == 2)
+                det += matrix[0, 0] * matrix[1, 1] - matrix[0, 1] * matrix[1, 0];
+            else
+                for (int i = 0; i < matrix.GetLength(0); i++)
+                    det += (float)Math.Pow(-1, i) * matrix[0, i] * CalculDeterminant(Scurtare(0, i, matrix));
+            return det;
+        }
+
+        static float[,] Scurtare(int x, int y, float[,] matrix)
+        {
+            int m = matrix.GetLength(0);
+            float[,] aux = new float[m - 1, m - 1];
+            for (int i = 0; i < m - 1; i++)
+                for (int j = 0; j < m - 1; j++)
+                {
+                    if (i < x && j < y)
+                        aux[i, j] = matrix[i, j];
+                    if (i < x && j >= y)
+                        aux[i, j] = matrix[i, j + 1];
+                    if (i >= x && j < y)
+                        aux[i, j] = matrix[i + 1, j];
+                    if (i >= x && j >= y)
+                        aux[i, j] = matrix[i + 1, j + 1];
+                }
+            return aux;
+        }
+
+        static void IsBanda(float[,] matrix)
+        {
+            int m = matrix.GetLength(0);
+            int k = m - 2;
+
+            bool isBanda = true;
+
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    if (Math.Abs(i - j) > k && matrix[i, j] != 0)
+                    {
+                        isBanda = false;
+                    }
+                }
+            }
+
+            if (isBanda)
+            {
+                Console.WriteLine("Inversa matricei este banda");
+            }
+            else
+            {
+                Console.WriteLine("Inversa matricei nu este banda");
+            }
+        }
+
+        static void Afisare(float[,] matrix)
+        {
+            Console.WriteLine();
+            int m = matrix.GetLength(0);
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < m; j++)
+                    Console.Write(matrix[i, j] + "\t");
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+        }
+    }

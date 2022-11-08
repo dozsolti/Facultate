@@ -1,0 +1,80 @@
+class Program
+    {
+        static float[,] A, Sim, Asim, Sum;
+        static int n;
+        static Random rnd = new Random();
+
+        static void Main(string[] args)
+        {
+            DimMatr:
+            Console.Write("Introduceti dimensiunea matricei: ");
+            try
+            {
+                n = int.Parse(Console.ReadLine());
+            }
+            catch
+            {
+                Console.WriteLine("Introduceti un numar valid!");
+                goto DimMatr;
+            }
+
+            A = new float[n, n];
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                {
+                    A[i, j] = rnd.Next(1, 10);
+                }
+            Afisare(A);
+
+            Sim = new float[n, n];
+            Asim = new float[n, n];
+
+            GasireElemente();
+            Console.WriteLine("Matricea simetrica:");
+            Afisare(Sim);
+            Console.WriteLine("Matricea antisimetrica:");
+            Afisare(Asim);
+
+            SumaMatrice();
+            Console.WriteLine("Suma dintre matricea simetrica si cea antisimetrica:");
+            Afisare(Sum);
+            
+            Console.ReadKey();
+        }
+
+        static void GasireElemente()
+        {
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = i + 1; j < n; j++)
+                {
+                    Sim[i, j] = Sim[j, i] = (A[i, j] + A[j, i]) / 2;
+                    Asim[i, j] = - (Asim[j, i] = (A[j, i] - A[i, j]) / 2);
+                }
+                Sim[i, i] = A[i, i];
+            }
+        }
+
+        static void SumaMatrice()
+        {
+            Sum = new float[n, n];
+            for(int i=0; i< n; i++)
+                for(int j=0; j< n; j++)
+                {
+                    Sum[i, j] = Sim[i, j] + Asim[i, j];
+                }
+        }
+
+        static void Afisare(float[,] matrix)
+        {
+            Console.WriteLine();
+            int m = matrix.GetLength(0);
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < m; j++)
+                    Console.Write(matrix[i, j] + "\t");
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+        }
+    }
